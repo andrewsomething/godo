@@ -16,6 +16,7 @@ type DropletActionsService interface {
 	Restore(int, int) (*Action, *Response, error)
 	Resize(int, string) (*Action, *Response, error)
 	Rename(int, string) (*Action, *Response, error)
+	Snapshot(int, string) (*Action, *Response, error)
 	doAction(int, *ActionRequest) (*Action, *Response, error)
 	Get(int, int) (*Action, *Response, error)
 	GetByURI(string) (*Action, *Response, error)
@@ -86,6 +87,20 @@ func (s *DropletActionsServiceOp) Rename(id int, name string) (*Action, *Respons
 	}
 
 	requestType := "rename"
+	request := &ActionRequest{
+		Type:   requestType,
+		Params: options,
+	}
+	return s.doAction(id, request)
+}
+
+// Snapshot a Droplet
+func (s *DropletActionsServiceOp) Snapshot(id int, name string) (*Action, *Response, error) {
+	options := map[string]interface{}{
+		"name": name,
+	}
+
+	requestType := "snapshot"
 	request := &ActionRequest{
 		Type:   requestType,
 		Params: options,
