@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get release notes
+      id: release_notes
+      run: |
+        BODY=$(sed -n '/^\#\# \[${{ github.ref }}\]/,/^\#\#/{//!p;}' CHANGELOG.md)
+        echo "::set-output name=body::${BODY}"
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref }}
+        body: |
+            ${{ steps.release_notes.outputs.body }}
+        draft: false
